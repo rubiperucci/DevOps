@@ -6,23 +6,15 @@ docker pull jenkins/jenkins
 
 docker pull sonatype/nexus3
 
-docker pull mongo
-
 docker run -p 8080:8080 --name=jenkins -d jenkins/jenkins
 
 docker run -d -p 8081:8081 --name nexus sonatype/nexus3
 
-mkdir ~/mongo_data
-
-docker run -d --name mongodb -v ~/mongo_data:/data/db mongo
-
-docker volume create mongo_data
-
-docker run -d --name db --mount src=mongo_data,dst=/data/db mongo
-
 docker network create --attachable atnet
 
 docker network connect atnet jenkins
+
+docker network connect atnet nexus
 
 mkdir ~/postgresql && mkdir ~/postgresql_data
 
@@ -38,6 +30,10 @@ docker volume create sonarqube_data
 docker volume create sonarqube_extensions
 
 docker volume create sonarqube_logs
+
+docker volume create jenkins
+
+docker volume create nexus
 
 docker run -d --name sonarqube \
 --network atnet -p 9000:9000 \
